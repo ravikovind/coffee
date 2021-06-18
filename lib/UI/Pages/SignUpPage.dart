@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:signup/BLoC/cubit/signupwithgoogle_cubit.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:signup/BLoC/cubit/signup_cubit.dart';
 import 'package:signup/UI/Widgets/Indicator.dart';
 
 class SignUpPage extends StatefulWidget {
@@ -50,9 +50,11 @@ class _SignUpPageState extends State<SignUpPage> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<SignupwithgoogleCubit, SignupwithgoogleState>(
-        builder: (context, state) {
+    return BlocBuilder<SignupCubit, SignupState>(builder: (context, state) {
       if (state is SignupwithgoogleLoading) {
+        return Indicator();
+      }
+      if (state is SignupwithEmailPasswordLoading) {
         return Indicator();
       }
       return Scaffold(
@@ -271,9 +273,9 @@ class _SignUpPageState extends State<SignUpPage> {
                             _password.text.validatePassword()) {
                           String dob = _birthDate.toString();
                           int age = DateTime.now().year - _birthDate!.year;
-                          BlocProvider.of<SignupwithgoogleCubit>(context)
-                              .signUp(_email.text, _password.text, dob, age,
-                                  _name.text);
+                          BlocProvider.of<SignupCubit>(context)
+                              .signUpWithEmailPassword(_email.text,
+                                  _password.text, dob, age, _name.text);
                         } else {
                           final snackBar = SnackBar(
                             duration: Duration(seconds: 2),
@@ -328,7 +330,7 @@ class _SignUpPageState extends State<SignUpPage> {
                       onPressed: () {
                         String dob = _birthDate.toString();
                         int age = DateTime.now().year - _birthDate!.year;
-                        BlocProvider.of<SignupwithgoogleCubit>(context)
+                        BlocProvider.of<SignupCubit>(context)
                             .signInWithGoogle(dob, age, _name.text);
                       },
                       child: Padding(

@@ -121,7 +121,7 @@ class AuthMethods {
   //   return userList;
   // }
 
-  Future<User?> signUp(
+  Future<User?> signUpWithEmailPassword(
     String email,
     String password,
     String name,
@@ -149,11 +149,12 @@ class AuthMethods {
     }
   }
 
-  Future<User?> signIn(String email, String password) async {
+  Future<User?> signInWithEmailPassword(String email, String password) async {
     try {
-      UserCredential userCredential = await FirebaseAuth.instance
-          .createUserWithEmailAndPassword(email: email, password: password);
+      UserCredential userCredential = await _auth!
+          .signInWithEmailAndPassword(email: email, password: password);
       User? user = userCredential.user;
+      assert(user != null);
       return user;
     } on FirebaseAuthException catch (e) {
       if (e.code == 'weak-password') {

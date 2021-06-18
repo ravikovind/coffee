@@ -3,46 +3,35 @@ import 'package:meta/meta.dart';
 import 'package:signup/Data/Repository/AuthRepository.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
-part 'signupwithgoogle_state.dart';
+part 'signup_state.dart';
 
-class SignupwithgoogleCubit extends Cubit<SignupwithgoogleState> {
-  SignupwithgoogleCubit() : super(SignupwithgoogleInitial());
+class SignupCubit extends Cubit<SignupState> {
+  SignupCubit() : super(SignupInitial());
 
   void signInWithGoogle(String? dob, int? age, String? name) async {
     final AuthRepository authRepository = AuthRepository();
+
     emit(SignupwithgoogleLoading());
     User? user = await authRepository.signInWithGoogle();
     bool newUser = await authRepository.authenticateUser(user!);
     if (!newUser) {
       authRepository.addDataToDb(user, dob!, age!, false, name!);
     }
-    emit(SignupwithgoogleDone());
+    emit(SignupDone());
   }
 
- void signOut() async {
-    emit(SignupwithgoogleLoading());
-    final AuthRepository authRepository = AuthRepository();
-    await authRepository.signOut();
-    emit(SignOutDone());
-  }
-
-   void getCurrentUser() async {
-    emit(SignOutLoading());
-    final AuthRepository authRepository = AuthRepository();
-    await authRepository.getCurrentUser();
-    emit(SignOutDone());
-  }
-
- void signUp(
+  void signUpWithEmailPassword(
     String? email,
     String? password,
     String? dob,
     int? age,
     String name,
   ) async {
+    emit(SignupwithEmailPasswordLoading());
     final AuthRepository authRepository = AuthRepository();
-    emit(SignupwithgoogleLoading());
-    User? user = await authRepository.signUp(email!, password!, name);
+
+    User? user =
+        await authRepository.signUpWithEmailPassword(email!, password!, name);
     if (user != null) {
       if (!user.emailVerified) {
         bool newUser = await authRepository.authenticateUser(user);
@@ -51,6 +40,13 @@ class SignupwithgoogleCubit extends Cubit<SignupwithgoogleState> {
         }
       }
     }
-    emit(SignupwithgoogleDone());
+    emit(SignupDone());
+  }
+
+  void signOut() async {
+    emit(SignupwithgoogleLoading());
+    final AuthRepository authRepository = AuthRepository();
+    await authRepository.signOut();
+    emit(SignOutDone());
   }
 }

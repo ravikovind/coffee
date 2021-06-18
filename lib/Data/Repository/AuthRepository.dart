@@ -17,11 +17,11 @@ class AuthRepository {
           User currentUser, String dob, int age, bool isEmail, String name) =>
       _methods!.addDataToDb(currentUser, dob, age, isEmail, name);
 
-  Future<User?> signUp(String email, String password, String name) =>
-      _methods!.signUp(email, password, name);
+  Future<User?> signUpWithEmailPassword(String email, String password, String name) =>
+      _methods!.signUpWithEmailPassword(email, password, name);
 
-  Future<User?> signIn(String email, String password) =>
-      _methods!.signIn(email, password);
+  Future<User?> signInWithEmailPassword(String email, String password) =>
+      _methods!.signInWithEmailPassword(email, password);
 
   Future<void> signOut() => _methods!.signOut();
 }

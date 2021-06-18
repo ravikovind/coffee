@@ -6,14 +6,14 @@ import 'package:signup/Data/Repository/DBRepository.dart';
 part 'shopitem_state.dart';
 
 class ShopitemCubit extends Cubit<ShopitemState> {
-  ShopitemCubit() : super(ShopitemInitial());
+  ShopitemCubit() : super(ShopitemInitial()) {
+    fetchItemList();
+  }
   void fetchItemList() async {
     emit(ShopitemLoading());
     List<ItemX?> items = [];
     final DBRepository repository = DBRepository();
-    await repository.fetchItemList().then((value) {
-      items = value;
-    });
+    items = await repository.fetchItemList();
     emit(ShopitemDone(itemX: items));
   }
 }
