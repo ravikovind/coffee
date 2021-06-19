@@ -6,9 +6,7 @@ import 'package:signup/Data/Repository/AuthRepository.dart';
 part 'getuser_state.dart';
 
 class GetuserCubit extends Cubit<GetuserState> {
-  GetuserCubit() : super(GetuserInitial()) {
-    getUser();
-  }
+  GetuserCubit() : super(GetuserInitial());
   void getUser() async {
     emit(GetUserLoading());
     final AuthRepository authRepository = AuthRepository();

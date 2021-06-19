@@ -11,6 +11,7 @@ class UserProfilePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    BlocProvider.of<GetuserCubit>(context).getUser();
     return BlocBuilder<GetuserCubit, GetuserState>(
       builder: (context, state) {
         if (!(state is GetUserDone)) {

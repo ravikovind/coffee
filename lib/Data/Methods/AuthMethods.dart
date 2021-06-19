@@ -19,9 +19,9 @@ class AuthMethods {
     bool isUserX = true;
     await _userCollection!.doc(user!.uid).get().then((value) {
       if (value.exists) {
-        isUserX = true;
-      } else {
         isUserX = false;
+      } else {
+        isUserX = true;
       }
     });
     // final List<DocumentSnapshot> docs = result.docs;

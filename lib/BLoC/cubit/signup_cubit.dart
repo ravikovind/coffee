@@ -8,14 +8,20 @@ part 'signup_state.dart';
 class SignupCubit extends Cubit<SignupState> {
   SignupCubit() : super(SignupInitial());
 
-  void signInWithGoogle(String? dob, int? age, String? name) async {
-    final AuthRepository authRepository = AuthRepository();
+  final AuthRepository authRepository = AuthRepository();
 
-    emit(SignupwithgoogleLoading());
+  void signUpWithGoogle(String? dob, int? age, String? name) async {
+    emit(Loading());
     User? user = await authRepository.signInWithGoogle();
-    bool newUser = await authRepository.authenticateUser(user!);
-    if (!newUser) {
-      authRepository.addDataToDb(user, dob!, age!, false, name!);
+    if (user != null) {
+      bool newUser = await authRepository.authenticateUser(user);
+      if (newUser) {
+        emit(CreatingAccountState());
+        authRepository.addDataToDb(user, dob!, age!, false, name!);
+      }
+    } else {
+      emit(ErrorState());
+      emit(SignupDone());
     }
     emit(SignupDone());
   }
@@ -27,25 +33,58 @@ class SignupCubit extends Cubit<SignupState> {
     int? age,
     String name,
   ) async {
-    emit(SignupwithEmailPasswordLoading());
-    final AuthRepository authRepository = AuthRepository();
-
+    emit(Loading());
     User? user =
         await authRepository.signUpWithEmailPassword(email!, password!, name);
     if (user != null) {
+      emit(CreatingAccountState());
       if (!user.emailVerified) {
-        bool newUser = await authRepository.authenticateUser(user);
-        if (!newUser) {
-          authRepository.addDataToDb(user, dob!, age!, true, name);
-        }
+        authRepository.addDataToDb(user, dob!, age!, true, name);
+      } else {
+        await authRepository.signInWithEmailPassword(email, password);
+        emit(SignupDone());
       }
+    } else {
+      emit(ErrorState());
+      emit(SignupDone());
     }
     emit(SignupDone());
   }
 
+  // void signInWithGoogle() async {
+  //   final AuthRepository authRepository = AuthRepository();
+  //   emit(SignupwithgoogleLoading());
+  //   User? user = await authRepository.signInWithGoogle();
+  //   bool newUser = await authRepository.authenticateUser(user!);
+  //   if (newUser) {}
+  //   emit(SignupDone());
+  // }
+
+  void signInWithEmailPassword(
+    String? email,
+    String? password,
+    String? dob,
+    int? age,
+    String name,
+  ) async {
+    emit(Loading());
+    User? user =
+        await authRepository.signInWithEmailPassword(email!, password!);
+    if (user == null) {
+      emit(CreatingAccountState());
+      User? user =
+          await authRepository.signUpWithEmailPassword(email, password, name);
+      authRepository.addDataToDb(user!, dob!, age!, true, name);
+      Future.delayed(const Duration(seconds: 2), () {
+        emit(SignupDone());
+      });
+    } else {
+      emit(SignupDone());
+    }
+  }
+
   void signOut() async {
-    emit(SignupwithgoogleLoading());
-    final AuthRepository authRepository = AuthRepository();
+    emit(Loading());
     await authRepository.signOut();
     emit(SignOutDone());
   }
